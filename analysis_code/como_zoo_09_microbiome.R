@@ -45,3 +45,13 @@ otus <- t(otus)
 otus <- data.frame(otus)
 otus <- tibble::rownames_to_column(otus, var = "#OTU ID")
 write.table(otus, file = "data/stitched/como_stitched_otu_filtered.txt",sep = "\t", quote = FALSE, row.names = FALSE)
+
+# Rename the columns to match the mapping file
+otus <- read.delim("data/stitched/como_stitched_otu_filtered.txt",header = 1,row.names = 1,check.names = FALSE)
+samples <- colnames(otus)
+map_friendly <- lapply(samples, function(x) paste(strsplit(x, split = '\\.')[[1]][1:2], collapse = '.'))
+colnames(otus) <- map_friendly
+colnames(otus)
+otus <- tibble::rownames_to_column(otus, var = "#OTU ID")
+write.table(otus, file = "data/stitched/como_stitched_otu_filtered_final.txt",sep = "\t", quote = FALSE, row.names = FALSE)
+
