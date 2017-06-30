@@ -55,3 +55,32 @@ colnames(otus)
 otus <- tibble::rownames_to_column(otus, var = "#OTU ID")
 write.table(otus, file = "data/stitched/como_stitched_otu_filtered_final.txt",sep = "\t", quote = FALSE, row.names = FALSE)
 
+
+# Do the same as above for the stitched taxa table
+taxa <- read.delim("../data/shi7_170628/como_stitched_taxa.txt",header = 1,row.names = 1,check.names = FALSE)
+szscids= c("SZ.SC1.S137.L001.",'SZ.SC2.S138.L001.',"SZ.SC3.S139.L001.","SZ.SC7.S143.L001.","SZ.SC4.S140.L001.","SZ.SC6.S142.L001.","SZ.SC5.S141.L001.")
+taxa <- taxa[, !(names(taxa) %in% szscids)]
+samples <- colnames(taxa)
+map_friendly <- lapply(samples, function(x) paste(strsplit(x, split = '\\.')[[1]][1:2], collapse = '.'))
+colnames(taxa) <- map_friendly
+colnames(taxa)
+# transpose so that rows are samples and columns are OTUs
+taxa <- t(taxa)
+depths <- rowSums(taxa)
+hist(depths,breaks=30)
+taxa.counts <- colSums(taxa > 0)
+hist(taxa.counts,breaks=30)
+taxa <- taxa[,colMeans(taxa > 0) >= .02]
+depths <- rowSums(taxa)
+dim(taxa)
+taxa.counts <- colSums(taxa > 0)
+hist(taxa.counts,breaks=30)
+sort(depths)[1:10]
+taxa <- taxa[depths >= 9500,]
+dim(taxa)
+taxa <- t(taxa)
+taxa <- data.frame(taxa)
+taxa <- tibble::rownames_to_column(taxa, var = "#OTU ID")
+write.table(taxa, file = "data/stitched/como_stitched_taxa_filtered_final.txt",sep = "\t", quote = FALSE, row.names = FALSE)
+
+
